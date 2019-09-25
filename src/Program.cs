@@ -8,8 +8,10 @@ namespace assignment1
     {
         static void Main(string[] args)
         {
+            // Run A* algorithm
             AStar.Run();
 
+            // Write data to /logs/.keep
             Logger.WriteLogFile();
 
             Console.WriteLine("\n\nPress enter to exit...");
