@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using assignment1.structures;
 using System.Text.RegularExpressions;
+using assignment1.logging;
 
 namespace assignment1.eightpuzzle
 {
@@ -10,7 +11,7 @@ namespace assignment1.eightpuzzle
     {
         public static BoardState goalState;
 
-        public static void Run(bool useMisplacedHeuristic)
+        public static void Run()
         {
             var frontier = new MinHeap<BoardNode>();
             var visited = new List<BoardState>();
@@ -20,17 +21,17 @@ namespace assignment1.eightpuzzle
             BoardNode current = null;
             BoardNode initialState;
 
-            do 
+            do
             {
                 goalState = getGoal();
                 initialState = getInitial();
             }
             while (!goalState.checkParity(initialState.State));
 
-            Console.WriteLine("Initial State: ");
+            Logger.WriteLine("Initial State: ");
             initialState.State.PrintBoard();
 
-            Console.WriteLine("Goal State: ");
+            Logger.WriteLine("Goal State: ");
             goalState.PrintBoard();
 
             frontier.Add(initialState);
@@ -39,7 +40,7 @@ namespace assignment1.eightpuzzle
             {
                 current = frontier.RemoveMin();
                 numExpanded++;
-        
+
                 if (current.GoalNode)
                 {
                     pathCost = current.GVal;
@@ -62,8 +63,8 @@ namespace assignment1.eightpuzzle
                 current = current.Parent;
             }
 
-            Console.WriteLine("Path found. Showing path... ");
-            Console.WriteLine();
+            Logger.WriteLine("Path found. Showing path... ");
+            Logger.WriteLine();
 
             foreach (var item in path)
             {
@@ -71,20 +72,21 @@ namespace assignment1.eightpuzzle
 
                 if (initialState.UseMisplacedHeuristic)
                 {
-                    Console.WriteLine($"Misplaced Heuristic: {item.HValMisplaced}");
+                    Logger.WriteLine($"Misplaced Heuristic: {item.HValMisplaced}");
                 }
                 else
                 {
-                    Console.WriteLine($"Manhatten Heuristic: {item.HValManhat}");
+                    Logger.WriteLine($"Manhatten Heuristic: {item.HValManhat}");
                 }
 
-                Console.WriteLine($"G Value: {item.GVal}");
-                Console.WriteLine();
+                Logger.WriteLine($"G Value: {item.GVal}");
+                Logger.WriteLine($"F Value: {item.FVal}");
+                Logger.WriteLine();
             }
 
-            Console.WriteLine("Number of Nodes Generated: " + numGenerated);
-            Console.WriteLine("Number of Nodes Expanded: " + numExpanded);
-            Console.WriteLine("Total Path Cost: " + pathCost);
+            Logger.WriteLine("Number of Nodes Generated: " + numGenerated);
+            Logger.WriteLine("Number of Nodes Expanded: " + numExpanded);
+            Logger.WriteLine("Total Path Cost: " + pathCost);
         }
 
         private static BoardNode getInitial()
@@ -93,8 +95,8 @@ namespace assignment1.eightpuzzle
             string[] start;
             char input1;
             char input2;
-            
-            do 
+
+            do
             {
                 Console.WriteLine("Would you like to create an intial state? (Y/N) ");
                 input1 = Console.ReadLine().ToCharArray()[0];
@@ -104,7 +106,7 @@ namespace assignment1.eightpuzzle
 
             if (char.ToUpper(input1) == 'Y')
             {
-                do 
+                do
                 {
                     Console.WriteLine("Please enter the starting state(1, 2, ... 8, 0): ");
                     start = Regex.Split(Console.ReadLine(), @"\D+");
@@ -112,7 +114,7 @@ namespace assignment1.eightpuzzle
                 }
                 while (BoardState.SetBoard(start) == null);
 
-                do 
+                do
                 {
                     Console.WriteLine("Would you like to use the Misplaced Tile Heuristic? (Y/N) ");
                     input2 = Console.ReadLine().ToCharArray()[0];
@@ -124,14 +126,14 @@ namespace assignment1.eightpuzzle
                 {
                     init = new BoardNode(BoardState.SetBoard(start), 0, true, null);
                 }
-                else 
+                else
                 {
                     init = new BoardNode(BoardState.SetBoard(start), 0, false, null);
                 }
             }
             else
             {
-                do 
+                do
                 {
                     Console.WriteLine("Would you like to use the Misplaced Tile Heuristic? (Y/N) ");
                     input2 = Console.ReadLine().ToCharArray()[0];
@@ -143,7 +145,7 @@ namespace assignment1.eightpuzzle
                 {
                     init = new BoardNode(BoardState.BuildRandomBoard(), 0, true, null);
                 }
-                else 
+                else
                 {
                     init = new BoardNode(BoardState.BuildRandomBoard(), 0, false, null);
                 }
@@ -157,8 +159,8 @@ namespace assignment1.eightpuzzle
             BoardState final;
             string[] goal;
             char input1;
-            
-            do 
+
+            do
             {
                 Console.WriteLine("Would you like to create a goal state? (Y/N) ");
                 input1 = Console.ReadLine().ToCharArray()[0];
@@ -168,7 +170,7 @@ namespace assignment1.eightpuzzle
 
             if (char.ToUpper(input1) == 'Y')
             {
-                do 
+                do
                 {
                     Console.WriteLine("Please enter the goal state(1, 2, ... 8, 0): ");
                     goal = Regex.Split(Console.ReadLine(), @"\D+");
@@ -180,7 +182,7 @@ namespace assignment1.eightpuzzle
             }
             else
             {
-                goal = new string[]{"1", "2", "3", "4", "5", "6", "7", "8", "0" };
+                goal = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "0" };
                 final = BoardState.SetBoard(goal);
             }
 

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using assignment1.logging;
 
 namespace assignment1.eightpuzzle
 {
@@ -20,8 +20,8 @@ namespace assignment1.eightpuzzle
             do
             {
                 state = new List<int>();
-                Console.WriteLine("Generating initial state...");
-                Console.WriteLine();
+                Logger.WriteLine("Generating initial state...");
+                Logger.WriteLine();
 
                 for (int i = 0; i < 9; i++)
                 {
@@ -119,11 +119,11 @@ namespace assignment1.eightpuzzle
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    Console.Write(State[i, j] + " ");
+                    Logger.Write(State[i, j] + " ");
                 }
-                Console.WriteLine();
+                Logger.WriteLine();
             }
-            Console.WriteLine();
+            Logger.WriteLine();
         }
 
         public void ShwapTiles(Position otherPos)
@@ -166,8 +166,8 @@ namespace assignment1.eightpuzzle
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    state1.Add(State[i,j]);
-                    state2.Add(other.State[i,j]);
+                    state1.Add(State[i, j]);
+                    state2.Add(other.State[i, j]);
                 }
             }
 
@@ -183,7 +183,7 @@ namespace assignment1.eightpuzzle
                         }
                     }
                 }
-                
+
                 if (state2[i] != 0)
                 {
                     for (int j = i + 1; j < 9; j++)
@@ -198,8 +198,8 @@ namespace assignment1.eightpuzzle
 
             if (inversions1 % 2 != inversions2 % 2)
             {
-                Console.WriteLine("The intial state cannot reach the goal state. ");
-                Console.WriteLine();
+                Logger.WriteLine("The intial state cannot reach the goal state. ");
+                Logger.WriteLine();
             }
 
             return inversions1 % 2 == inversions2 % 2;
@@ -213,7 +213,7 @@ namespace assignment1.eightpuzzle
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    stateList.Add(State[i,j]);
+                    stateList.Add(State[i, j]);
                 }
             }
 
