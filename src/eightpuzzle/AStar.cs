@@ -76,7 +76,7 @@ namespace assignment1.eightpuzzle
                 }
                 else
                 {
-                    Logger.WriteLine($"Manhatten Heuristic: {item.HValManhat}");
+                    Logger.WriteLine($"Manhattan Heuristic: {item.HValManhat}");
                 }
 
                 Logger.WriteLine($"G Value: {item.GVal}");
