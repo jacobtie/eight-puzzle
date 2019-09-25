@@ -71,16 +71,9 @@ namespace assignment1.eightpuzzle
                     {
                         continue;
                     }
-                    if (State[i, j] != (i * 3) + j + 1)
+                    if (State[i, j] != AStar.goalState[i, j])
                     {
                         misplacedValue++;
-                    }
-                    else if (i == 2 && j == 2)
-                    {
-                        if (State[2, 2] != 0)
-                        {
-                            misplacedValue++;
-                        }
                     }
                 }
             }
@@ -89,6 +82,7 @@ namespace assignment1.eightpuzzle
 
             // Calculate manhattan distance heuristic
             int manhatHeuristic = 0;
+
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -97,8 +91,9 @@ namespace assignment1.eightpuzzle
                     {
                         continue;
                     }
-                    int actualI = (State[i, j] - 1) / 3;
-                    int actualJ = (State[i, j] - 1) % 3;
+
+                    int actualI = AStar.goalState.toList().IndexOf(State[i, j]) / 3;
+                    int actualJ = AStar.goalState.toList().IndexOf(State[i, j]) % 3;
                     manhatHeuristic += Math.Abs(i - actualI) + Math.Abs(j - actualJ);
                 }
             }

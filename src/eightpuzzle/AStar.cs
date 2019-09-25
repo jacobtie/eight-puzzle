@@ -2,36 +2,52 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using assignment1.structures;
+using System.Text.RegularExpressions;
 
 namespace assignment1.eightpuzzle
 {
     public static class AStar
     {
+        public static BoardState goalState;
+
         public static void Run(bool useMisplacedHeuristic)
         {
-            int[,] testState = { { 4, 1, 3 }, { 0, 2, 6 }, { 7, 5, 8 } };
-            var testBoard = new BoardState { State = testState, ZeroPosition = new Position(1, 0) };
-            // var initialState = new BoardNode(BoardState.BuildRandomBoard(), 0, useMisplacedHeuristic, null);
-            var initialState = new BoardNode(testBoard, 0, useMisplacedHeuristic, null);
             var frontier = new MinHeap<BoardNode>();
-            frontier.Add(initialState);
             var visited = new List<BoardState>();
+            int numExpanded = 0;
+            int numGenerated = 0;
+            int pathCost = 0;
             BoardNode current = null;
+            BoardNode initialState;
+
+            do 
+            {
+                goalState = getGoal();
+                initialState = getInitial();
+            }
+            while (!goalState.checkParity(initialState.State));
+
+            Console.WriteLine("Initial State: ");
+            initialState.State.PrintBoard();
+
+            Console.WriteLine("Goal State: ");
+            goalState.PrintBoard();
+
+            frontier.Add(initialState);
 
             while (!frontier.IsEmpty())
             {
                 current = frontier.RemoveMin();
-                current.State.PrintBoard();
-                Console.WriteLine($"Misplaced Heuristic: {current.HValMisplaced}");
-                Console.WriteLine($"Manhatten Heuristic: {current.HValManhat}");
-                Console.WriteLine($"G Value: {current.GVal}");
-                Console.WriteLine();
+                numExpanded++;
+        
                 if (current.GoalNode)
                 {
+                    pathCost = current.GVal;
                     break;
                 }
                 visited.Add(current.State);
                 var successors = current.GenerateSuccessors().Where(successor => !visited.Contains(successor.State));
+                numGenerated += successors.ToList().Count;
                 foreach (var successor in successors)
                 {
                     frontier.Add(successor);
@@ -46,11 +62,129 @@ namespace assignment1.eightpuzzle
                 current = current.Parent;
             }
 
+            Console.WriteLine("Path found. Showing path... ");
+            Console.WriteLine();
+
             foreach (var item in path)
             {
                 item.State.PrintBoard();
+
+                if (initialState.UseMisplacedHeuristic)
+                {
+                    Console.WriteLine($"Misplaced Heuristic: {item.HValMisplaced}");
+                }
+                else
+                {
+                    Console.WriteLine($"Manhatten Heuristic: {item.HValManhat}");
+                }
+
+                Console.WriteLine($"G Value: {item.GVal}");
                 Console.WriteLine();
             }
+
+            Console.WriteLine("Number of Nodes Generated: " + numGenerated);
+            Console.WriteLine("Number of Nodes Expanded: " + numExpanded);
+            Console.WriteLine("Total Path Cost: " + pathCost);
+        }
+
+        private static BoardNode getInitial()
+        {
+            BoardNode init;
+            string[] start;
+            char input1;
+            char input2;
+            
+            do 
+            {
+                Console.WriteLine("Would you like to create an intial state? (Y/N) ");
+                input1 = Console.ReadLine().ToCharArray()[0];
+                Console.WriteLine();
+            }
+            while (char.ToUpper(input1) != 'Y' && char.ToUpper(input1) != 'N');
+
+            if (char.ToUpper(input1) == 'Y')
+            {
+                do 
+                {
+                    Console.WriteLine("Please enter the starting state(1, 2, ... 8, 0): ");
+                    start = Regex.Split(Console.ReadLine(), @"\D+");
+                    Console.WriteLine();
+                }
+                while (BoardState.SetBoard(start) == null);
+
+                do 
+                {
+                    Console.WriteLine("Would you like to use the Misplaced Tile Heuristic? (Y/N) ");
+                    input2 = Console.ReadLine().ToCharArray()[0];
+                    Console.WriteLine();
+                }
+                while (char.ToUpper(input2) != 'Y' && char.ToUpper(input2) != 'N');
+
+                if (char.ToUpper(input2) == 'Y')
+                {
+                    init = new BoardNode(BoardState.SetBoard(start), 0, true, null);
+                }
+                else 
+                {
+                    init = new BoardNode(BoardState.SetBoard(start), 0, false, null);
+                }
+            }
+            else
+            {
+                do 
+                {
+                    Console.WriteLine("Would you like to use the Misplaced Tile Heuristic? (Y/N) ");
+                    input2 = Console.ReadLine().ToCharArray()[0];
+                    Console.WriteLine();
+                }
+                while (char.ToUpper(input2) != 'Y' && char.ToUpper(input2) != 'N');
+
+                if (char.ToUpper(input2) == 'Y')
+                {
+                    init = new BoardNode(BoardState.BuildRandomBoard(), 0, true, null);
+                }
+                else 
+                {
+                    init = new BoardNode(BoardState.BuildRandomBoard(), 0, false, null);
+                }
+            }
+
+            return init;
+        }
+
+        private static BoardState getGoal()
+        {
+            BoardState final;
+            string[] goal;
+            char input1;
+            
+            do 
+            {
+                Console.WriteLine("Would you like to create a goal state? (Y/N) ");
+                input1 = Console.ReadLine().ToCharArray()[0];
+                Console.WriteLine();
+            }
+            while (char.ToUpper(input1) != 'Y' && char.ToUpper(input1) != 'N');
+
+            if (char.ToUpper(input1) == 'Y')
+            {
+                do 
+                {
+                    Console.WriteLine("Please enter the goal state(1, 2, ... 8, 0): ");
+                    goal = Regex.Split(Console.ReadLine(), @"\D+");
+                    Console.WriteLine();
+                }
+                while (BoardState.SetBoard(goal) == null);
+
+                final = BoardState.SetBoard(goal);
+            }
+            else
+            {
+                goal = new string[]{"1", "2", "3", "4", "5", "6", "7", "8", "0" };
+                final = BoardState.SetBoard(goal);
+            }
+
+            return final;
         }
     }
 }
