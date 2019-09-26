@@ -96,8 +96,15 @@ namespace assignment1.eightpuzzle
             // Check and store each value in the given array
             for (int i = 0; i < 9; i++)
             {
+                var parsedNum = -1;
+
+                if (!Int32.TryParse(nums[i], out parsedNum))
+                {
+                    return null;
+                }
+
                 // If the current value is not between zero and eight
-                if (Int32.Parse(nums[i]) > 8 || Int32.Parse(nums[i]) < 0)
+                if (parsedNum > 8 || parsedNum < 0)
                 {
                     Console.WriteLine("All numbers must be between 0 and 8 inclusive. ");
                     Console.WriteLine();
@@ -105,7 +112,7 @@ namespace assignment1.eightpuzzle
                 }
 
                 // If the current value is stored in the list multiple times
-                if (state.Contains(Int32.Parse(nums[i])))
+                if (state.Contains(parsedNum))
                 {
                     Console.WriteLine("All numbers must be unique from one another. ");
                     Console.WriteLine();
@@ -113,14 +120,14 @@ namespace assignment1.eightpuzzle
                 }
 
                 // If the current value is equal to zero
-                if (Int32.Parse(nums[i]) == 0)
+                if (parsedNum == 0)
                 {
                     // Set the position of the empty tile
                     zeroPos = new Position(i / 3, i % 3);
                 }
 
                 // Add the current value to the list
-                state.Add(Int32.Parse(nums[i]));
+                state.Add(parsedNum);
             }
 
             // Convert the list to a 2D array
@@ -229,7 +236,7 @@ namespace assignment1.eightpuzzle
 
             // Find the number of inversions for each board
             for (int i = 0; i < 9; i++)
-            { 
+            {
                 // If the current value in state1 is not equal to zero
                 if (state1[i] != 0)
                 {
